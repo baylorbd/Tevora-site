@@ -72,11 +72,12 @@
 <section class="feedback">
 <h2>Got feedback? We want it.</h2>
 <p class="intro">Tell us what confused you, what you'd change, or what would make you buy one. We read every message.</p>
-<form class="feedback-form" id="feedback-form" novalidate>
-<textarea class="feedback-text" id="feedback-text" placeholder="Type your thoughts here..." required></textarea>
+<form class="feedback-form" action="https://formsubmit.co/OwenBaylor@gmail.com" method="POST">
+<input type="hidden" name="_subject" value="TeeBank website feedback">
+<input type="hidden" name="_captcha" value="false">
+<textarea class="feedback-text" id="feedback-text" name="Feedback" placeholder="Type your thoughts here..." required></textarea>
 <button class="submit" type="submit">Send feedback</button>
 </form>
-<p class="form-status" id="feedback-status" role="status"></p>
 </section>
 
 <section class="details">
@@ -209,27 +210,6 @@ wireForm('hero-form', 'hero-email', 'hero-status');
 wireForm('footer-form', 'footer-email', 'footer-status');
 refreshCount();
 
-const feedbackForm = document.getElementById('feedback-form');
-if (feedbackForm) {
-const feedbackText = document.getElementById('feedback-text');
-const feedbackStatus = document.getElementById('feedback-status');
-feedbackForm.addEventListener('submit', function (e) {
-e.preventDefault();
-const message = feedbackText.value.trim();
-feedbackStatus.className = 'form-status';
-if (!message) {
-feedbackStatus.textContent = 'Type something first, then send it over.';
-feedbackStatus.classList.add('err');
-return;
-}
-const subject = encodeURIComponent('TeeBank feedback');
-const body = encodeURIComponent(message);
-window.location.href = 'mailto:owenbaylor@gmail.com?subject=' + subject + '&body=' + body;
-feedbackStatus.textContent = 'Opening your email app to send it...';
-feedbackStatus.classList.add('ok');
-feedbackText.value = '';
-});
-}
 })();
 </script>
 
