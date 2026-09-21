@@ -1,10 +1,12 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "tevora-site",
+  "main": "src/index.js",
   "compatibility_date": "2026-09-21",
 
   "assets": {
-    "directory": "./public"
+    "directory": "./public",
+    "binding": "ASSETS"
   },
 
   "kv_namespaces": [
