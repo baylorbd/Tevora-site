@@ -1,8 +1,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "golftevora",
+  "name": "tevora-site",
   "compatibility_date": "2026-09-21",
-  "pages_build_output_dir": ".",
+
+  "assets": {
+    "directory": "."
+  },
 
   "kv_namespaces": [
     {
