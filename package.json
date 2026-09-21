@@ -5,6 +5,9 @@
     "deploy": "wrangler deploy",
     "dev": "wrangler dev"
   },
+  "dependencies": {
+    "mimetext": "^3.0.27"
+  },
   "devDependencies": {
     "wrangler": "^4.0.0"
   }
