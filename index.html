@@ -19,10 +19,10 @@
 <span class="pill">Coming to the first tee soon</span><p class="kicker">Meet TeeBank</p>
 <h1>Stop digging in your bag for a tee.</h1>
 <p class="lede">TeeBank holds 6 tees right inside its body and dispenses the next one with the push of a button the moment you take a tee. No more fishing around your bag between holes. We're finishing the mold now. Leave your email and we'll let you know the moment it's ready to order.</p>
-<form class="waitlist" action="https://formsubmit.co/378961a67831cc9072c010d17c2ccdd0" method="POST">
-<input type="hidden" name="_subject" value="New GolfTevora TeeBank waitlist signup"><input type="hidden" name="_captcha" value="false"><input type="hidden" name="_template" value="table">
-<div class="field"><label for="hero-email" class="sr-only" style="position:absolute;left:-9999px;">Email address</label><input type="email" id="hero-email" name="Email" placeholder="you@email.com" required autocomplete="email"></div>
+<form class="waitlist" id="hero-form" novalidate>
+<div class="field"><label for="hero-email" class="sr-only" style="position:absolute;left:-9999px;">Email address</label><input type="email" id="hero-email" name="email" placeholder="you@email.com" required autocomplete="email"></div>
 <button class="submit" type="submit">Notify me</button></form>
+<p class="form-status" id="hero-status" role="status"></p>
 <p class="form-note">No spam, just <strong>one email</strong>, the day we launch.</p></div>
 <div class="product-wrap"><img src="tevora-product.png" alt="TeeBank, the TEVORA golf tee dispenser" class="product-img"><span class="price-badge">$24.99</span></div></section>
 <section class="how"><h2>Three steps to a better round</h2><div class="steps">
@@ -31,9 +31,11 @@
 <div class="step"><div class="num">3</div><h3>Play</h3><p>Take your tee and play through. TeeBank stays clipped to your bag, ready for the next hole.</p></div>
 </div></section>
 <section class="feedback"><h2>Got feedback? We want it.</h2><p class="intro">Tell us what confused you, what you'd change, or what would make you buy one. We read every message.</p>
-<form class="feedback-form" action="https://formsubmit.co/378961a67831cc9072c010d17c2ccdd0" method="POST">
-<input type="hidden" name="_subject" value="GolfTevora TeeBank website feedback"><input type="hidden" name="_captcha" value="false"><input type="hidden" name="_template" value="table">
-<textarea class="feedback-text" id="feedback-text" name="Feedback" placeholder="Type your thoughts here..." required></textarea><button class="submit" type="submit">Send feedback</button></form></section>
+<form class="feedback-form" id="feedback-form" novalidate>
+<textarea class="feedback-text" id="feedback-text" name="feedback" placeholder="Type your thoughts here..." required></textarea>
+<button class="submit" type="submit">Send feedback</button>
+</form>
+<p class="form-status" id="feedback-status" role="status"></p></section>
 <section class="details"><div><h2>Built for the course, not your junk drawer.</h2>
 <p class="intro">TeeBank clips right to your bag and is simple enough to trust for years. Molded from impact- and UV-resistant ABS with a matte finish, it's built to take rain, heat, and getting dropped on cart paths.</p>
 <ul class="spec-list"><li><span><strong>Holds 6 tees:</strong> standard 2¾&quot; length, refill through the back door.</span></li><li><span><strong>Effortless dispensing:</strong> press the button and the next tee loads.</span></li><li><span><strong>Clips anywhere:</strong> bag, push cart, or belt.</span></li><li><span><strong>One design, first:</strong> done right, before anything else.</span></li></ul></div>
@@ -41,9 +43,58 @@
 <section class="future"><div class="future-text"><h2>New colorways are already in the works</h2><p>We're already developing additional finishes and colorways, plus custom options for teams and courses. Matte black is where we're starting: one design, done right, before we expand the lineup.</p></div><ul class="future-tags" aria-hidden="true"><li>New finishes</li><li>Team &amp; club colors</li><li>Custom engraving</li></ul></section>
 <section class="story"><h2>Why sleek and simple</h2><div><p>The first prototype didn't look like anything, just a box with a spring. It worked, but nobody wanted to be seen with it clipped to their bag.</p><p>Golf gear tends to go one of two ways: loud logos or forgettable plastic. We wanted something that looked like it belonged next to the rest of your equipment: minimal, matte, and built with the same attention you'd expect from the clubs in your bag.</p></div></section>
 <section class="footer-cta" id="join"><h2>Be first to know when TeeBank drops</h2><p>Launching at <strong>$24.99</strong>. One email. No spam. We'll send it the day TeeBank goes on sale.</p>
-<form class="waitlist" action="https://formsubmit.co/378961a67831cc9072c010d17c2ccdd0" method="POST">
-<input type="hidden" name="_subject" value="New GolfTevora TeeBank waitlist signup"><input type="hidden" name="_captcha" value="false"><input type="hidden" name="_template" value="table">
-<div class="field"><label for="footer-email" class="sr-only" style="position:absolute;left:-9999px;">Email address</label><input type="email" id="footer-email" name="Email" placeholder="you@email.com" required autocomplete="email"></div><button class="submit" type="submit">Notify me</button></form></section>
+<form class="waitlist" id="footer-form" novalidate>
+<div class="field"><label for="footer-email" class="sr-only" style="position:absolute;left:-9999px;">Email address</label><input type="email" id="footer-email" name="email" placeholder="you@email.com" required autocomplete="email"></div>
+<button class="submit" type="submit">Notify me</button></form>
+<p class="form-status" id="footer-status" role="status"></p>
+<p class="waitlist-count" id="waitlist-count"></p></section>
 <footer class="site-footer"><span>© 2026 TEVORA</span><span>Made for the course, not the junk drawer.</span></footer>
 </main>
+
+<script>
+(function () {
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  async function refreshCount() {
+    const el = document.getElementById('waitlist-count');
+    if (!el) return;
+    try {
+      const r = await fetch('/api/waitlist');
+      const x = await r.json();
+      const n = Number(x.count || 0);
+      el.innerHTML = n > 0 ? '<strong>' + n.toLocaleString() + '</strong> golfer' + (n === 1 ? '' : 's') + ' already on the list' : '';
+    } catch (_) { el.textContent = ''; }
+  }
+  function wireWaitlist(formId, inputId, statusId) {
+    const form=document.getElementById(formId), input=document.getElementById(inputId), status=document.getElementById(statusId);
+    if (!form) return;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault(); status.className='form-status'; status.textContent='';
+      const email=input.value.trim();
+      if (!EMAIL_RE.test(email)) { status.textContent='That doesn’t look like a valid email. Check and try again.'; status.classList.add('err'); return; }
+      const btn=form.querySelector('button'); const old=btn.textContent; btn.disabled=true; btn.textContent='Adding you…';
+      try {
+        const r=await fetch('/api/waitlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+        const x=await r.json(); if (!r.ok || !x.success) throw new Error();
+        status.textContent=x.existing ? 'You’re already on the list.' : 'You’re on the list. We’ll email you the day it drops.'; status.classList.add('ok'); input.value=''; refreshCount();
+      } catch (_) { status.textContent='Something went wrong. Please try again.'; status.classList.add('err'); }
+      finally { btn.disabled=false; btn.textContent=old; }
+    });
+  }
+  const ff=document.getElementById('feedback-form');
+  if (ff) ff.addEventListener('submit', async (e) => {
+    e.preventDefault(); const status=document.getElementById('feedback-status'), box=document.getElementById('feedback-text'), btn=ff.querySelector('button');
+    status.className='form-status'; status.textContent=''; const feedback=box.value.trim();
+    if (!feedback) return; const old=btn.textContent; btn.disabled=true; btn.textContent='Sending…';
+    try {
+      const r=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({feedback})});
+      const x=await r.json(); if (!r.ok || !x.success) throw new Error();
+      status.textContent='Thanks — your feedback was sent.'; status.classList.add('ok'); box.value='';
+    } catch (_) { status.textContent='Something went wrong. Please try again.'; status.classList.add('err'); }
+    finally { btn.disabled=false; btn.textContent=old; }
+  });
+  wireWaitlist('hero-form','hero-email','hero-status');
+  wireWaitlist('footer-form','footer-email','footer-status');
+  refreshCount();
+})();
+</script>
 </body></html>

@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "golftevora",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-09-21",
+  "assets": { "directory": "./public", "binding": "ASSETS" },
+  "kv_namespaces": [
+    { "binding": "TEVORA_DATA", "id": "REPLACE_WITH_YOUR_KV_NAMESPACE_ID" }
+  ],
+  "send_email": [
+    { "name": "EMAIL", "destination_address": "golftevora@gmail.com" }
+  ]
+}
