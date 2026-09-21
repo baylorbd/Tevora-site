@@ -1,3 +1,32 @@
+import { EmailMessage } from "cloudflare:email";
+import { createMimeMessage } from "mimetext";
+
+const TO_EMAIL = "tevoragolf@gmail.com";
+const FROM_EMAIL = "website@golftevora.com";
+
+async function sendEmail(env, subject, text) {
+  const msg = createMimeMessage();
+
+  msg.setSender({
+    name: "GolfTevora Website",
+    addr: FROM_EMAIL
+  });
+
+  msg.setRecipient(TO_EMAIL);
+  msg.setSubject(subject);
+  msg.addMessage({
+    contentType: "text/plain",
+    data: text
+  });
+
+  const message = new EmailMessage(
+    FROM_EMAIL,
+    TO_EMAIL,
+    msg.asRaw()
+  );
+
+  await env.EMAIL.send(message);
+}
 
 export default {
   async fetch(request, env) {
@@ -33,11 +62,19 @@ export default {
           })
         );
 
+        await sendEmail(
+          env,
+          "New GolfTevora TeeBank signup",
+          `A new golfer joined the TeeBank waitlist.\n\nEmail: ${email}`
+        );
+
         return Response.json({
           success: true
         });
 
       } catch (err) {
+        console.error(err);
+
         return Response.json(
           { success: false, error: "Unable to save signup" },
           { status: 500 }
@@ -66,11 +103,19 @@ export default {
           })
         );
 
+        await sendEmail(
+          env,
+          "New GolfTevora website feedback",
+          `New feedback was submitted on GolfTevora.com:\n\n${feedback}`
+        );
+
         return Response.json({
           success: true
         });
 
       } catch (err) {
+        console.error(err);
+
         return Response.json(
           { success: false, error: "Unable to save feedback" },
           { status: 500 }
@@ -78,7 +123,6 @@ export default {
       }
     }
 
-    // SERVE THE WEBSITE
     return env.ASSETS.fetch(request);
   }
 };
