@@ -21,5 +21,12 @@
       "name": "EMAIL",
       "destination_address": "tevoragolf@gmail.com"
     }
-  ]
+  ],
+
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  }
 }
