@@ -14,5 +14,12 @@
       "binding": "WAITLIST",
       "id": "15d168f6c3fa4652995b5e337a435263"
     }
+  ],
+
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "destination_address": "tevoragolf@gmail.com"
+    }
   ]
 }
