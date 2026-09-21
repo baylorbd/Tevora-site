@@ -4,7 +4,7 @@ import { createMimeMessage } from "mimetext";
 const TO_EMAIL = "tevoragolf@gmail.com";
 const FROM_EMAIL = "website@golftevora.com";
 
-async function sendEmail(env, subject, text) {
+async function sendNotification(env, subject, text) {
   const msg = createMimeMessage();
 
   msg.setSender({
@@ -14,6 +14,7 @@ async function sendEmail(env, subject, text) {
 
   msg.setRecipient(TO_EMAIL);
   msg.setSubject(subject);
+
   msg.addMessage({
     contentType: "text/plain",
     data: text
@@ -34,14 +35,25 @@ export default {
 
     // GET WAITLIST COUNT
     if (url.pathname === "/api/waitlist" && request.method === "GET") {
-      const list = await env.WAITLIST.list({ prefix: "email:" });
+      try {
+        const list = await env.WAITLIST.list({
+          prefix: "email:"
+        });
 
-      return Response.json({
-        count: list.keys.length
-      });
+        return Response.json({
+          count: list.keys.length
+        });
+      } catch (err) {
+        console.error("WAITLIST COUNT ERROR:", err);
+
+        return Response.json(
+          { success: false, error: "Unable to retrieve count" },
+          { status: 500 }
+        );
+      }
     }
 
-    // ADD TO WAITLIST
+    // ADD EMAIL TO WAITLIST
     if (url.pathname === "/api/waitlist" && request.method === "POST") {
       try {
         const body = await request.json();
@@ -54,26 +66,46 @@ export default {
           );
         }
 
+        // Save signup first
         await env.WAITLIST.put(
           "email:" + email,
           JSON.stringify({
-            email,
+            email: email,
             created: new Date().toISOString()
           })
         );
 
-        await sendEmail(
-          env,
-          "New GolfTevora TeeBank signup",
-          `A new golfer joined the TeeBank waitlist.\n\nEmail: ${email}`
-        );
+        console.log("WAITLIST SAVED:", email);
 
+        // Email notification is secondary.
+        try {
+          await sendNotification(
+            env,
+            "New GolfTevora TeeBank signup",
+            `A new golfer joined the TeeBank waitlist.
+
+Email: ${email}`
+          );
+
+          console.log("WAITLIST EMAIL SENT:", email);
+
+        } catch (emailError) {
+          console.error(
+            "WAITLIST EMAIL ERROR:",
+            emailError?.message || String(emailError)
+          );
+        }
+
+        // Signup succeeded because it is safely stored in KV.
         return Response.json({
           success: true
         });
 
       } catch (err) {
-        console.error(err);
+        console.error(
+          "WAITLIST ERROR:",
+          err?.message || String(err)
+        );
 
         return Response.json(
           { success: false, error: "Unable to save signup" },
@@ -95,26 +127,47 @@ export default {
           );
         }
 
+        // Save feedback first
+        const feedbackId = crypto.randomUUID();
+
         await env.WAITLIST.put(
-          "feedback:" + crypto.randomUUID(),
+          "feedback:" + feedbackId,
           JSON.stringify({
-            feedback,
+            feedback: feedback,
             created: new Date().toISOString()
           })
         );
 
-        await sendEmail(
-          env,
-          "New GolfTevora website feedback",
-          `New feedback was submitted on GolfTevora.com:\n\n${feedback}`
-        );
+        console.log("FEEDBACK SAVED:", feedbackId);
+
+        // Email notification is secondary.
+        try {
+          await sendNotification(
+            env,
+            "New GolfTevora website feedback",
+            `New feedback was submitted on GolfTevora.com:
+
+${feedback}`
+          );
+
+          console.log("FEEDBACK EMAIL SENT:", feedbackId);
+
+        } catch (emailError) {
+          console.error(
+            "FEEDBACK EMAIL ERROR:",
+            emailError?.message || String(emailError)
+          );
+        }
 
         return Response.json({
           success: true
         });
 
       } catch (err) {
-        console.error(err);
+        console.error(
+          "FEEDBACK ERROR:",
+          err?.message || String(err)
+        );
 
         return Response.json(
           { success: false, error: "Unable to save feedback" },
